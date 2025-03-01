@@ -165,6 +165,10 @@ if __name__ == '__main__':
 	#start = BlockWorldHeuristic(N)
 	#goal = BlockWorldHeuristic(N)
 
+	import os 
+	dir_path = os.path.dirname(os.path.realpath(__file__))
+	print(dir_path)
+
 	import json
 	def load_problem(n, pid):
 		with open(f"problems/{n}/{pid}", "r") as f:
