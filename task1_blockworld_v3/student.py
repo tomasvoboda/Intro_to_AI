@@ -2,31 +2,32 @@ from blockworld import BlockWorld
 from queue import PriorityQueue
 
 class BlockWorldHeuristic(BlockWorld):
-	def __init__(self, num_blocks=5, state=None):
-		BlockWorld.__init__(self, num_blocks, state)
+    def __init__(self, num_blocks=5, state=None):
+        BlockWorld.__init__(self, num_blocks, state)
+ 
+    def heuristic(self, goal):
+        self_state = self.get_state()
+        goal_state = goal.get_state()
+ 
+        total_blocks = sum(len(stack) for stack in goal_state)
+        total_matched = 0
+ 
+        for gstack in goal_state:
+            best_match = 0
+            for cstack in self_state:
+                match = 0
+                min_length = min(len(gstack), len(cstack))
+                for i in range(1, min_length+1):
+                    if gstack[-i] == cstack[-i]:
+                        match += 1
+                    else:
+                        break
+                if match > best_match:
+                    best_match = match
+            total_matched += best_match
+ 
+        return total_blocks - total_matched
 
-	def heuristic(self, goal):
-		self_state = self.get_state()
-		goal_state = goal.get_state()
-
-		total_blocks = sum(len(stack) for stack in goal_state)
-		total_matched = 0
-
-		for gstack in goal_state:
-			best_match = 0
-			for cstack in self_state:
-				match = 0
-				min_length = min(len(gstack), len(cstack))
-				for i in range(1, min_length+1):
-					if gstack[-i] == cstack[-i]:
-						match += 1
-					else:
-						break
-				if match > best_match:
-					best_match = match
-			total_matched += best_match
-
-		return total_blocks - total_matched
 
 class AStar():
 	def search(self, start, goal):
@@ -38,11 +39,11 @@ class AStar():
 
 		# Init
 		open_queue = PriorityQueue()
-		open_queue.put((start.heuristic(goal), start))
+		start_h = start.heuristic(goal)
+		open_queue.put((start_h, start))
 		
 		g_cost = {start: 0}
 		came_from = {start: None}
-
 		closed_set = set()
 
 		# A* search
@@ -59,8 +60,9 @@ class AStar():
 				return self._reconstruct_path(came_from, current)
 			
 			# Expand
+			current_g = g_cost[current]
 			for action, neighbor in current.get_neighbors():
-				tentative_g = g_cost[current] + 1
+				tentative_g = current_g + 1
 
 				if (neighbor not in g_cost) or (tentative_g < g_cost[neighbor]):
 					g_cost[neighbor] = tentative_g
