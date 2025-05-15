@@ -119,7 +119,7 @@ class MCTSBot:
 if __name__ == '__main__':
     board = ox.Board(8)  # 8x8
     #bots = [MCTSBot(0, 0.1), MCTSBot(1, 1.0)]
-    bots = [MCTSBot(0, 1), MCTSBot(1, 10)]
+    bots = [MCTSBot(0, 10), MCTSBot(1, 12)]
 
     # try your bot against itself
     while not board.is_terminal():
